@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using program;
+using System.Text.RegularExpressions;
 
 namespace program1
 {
@@ -30,7 +31,7 @@ namespace program1
             //service.AddOrder(order1);
             //service.AddOrder(order2);
 
-            orderbinding.DataSource = service.orderList;
+            orderbinding.DataSource = service.OrderList;
 
         }
 
@@ -59,11 +60,29 @@ namespace program1
                 orderbinding.DataSource = service.CheckByProduct(textBox1.Text);
             }
         }
+        private bool Save()
+        {
+            string phoneNum = @"^\+[0-9]{2}-[0-9]{2}-[0-9]{8}$";
 
+            Regex rx1 = new Regex(phoneNum);
+
+            foreach (var o in service.OrderList)
+            {
+                Match m1 = rx1.Match(o.PhoneNum);
+                if (m1.Success == false)
+                {
+                    MessageBox.Show("电话号码格式错误");
+                    return false;
+                }
+      
+            }
+            service.Export("s.xml"); 
+            return true;
+        }
         private void change_Click(object sender, EventArgs e)
         {
-            
-            service.Export("s.xml");
+
+            Save();
         }
 
         private void remove_Click(object sender, EventArgs e)
@@ -71,17 +90,19 @@ namespace program1
             if (comboBox1.SelectedItem.ToString() == "产品Id")
             {
                 service.DeleteById(textBox1.Text);
-                orderbinding.DataSource = service.orderList;
+                orderbinding.DataSource = service.OrderList;
             }
             else if (comboBox1.SelectedItem.ToString() == "用户名字")
             {
                 service.DeleteByClient(textBox1.Text);
             }
             service.Export("s.xml");
-            //else if (comboBox1.SelectedItem.ToString() == "产品名字")
-            //{
-            //    orderbinding.DataSource = service.CheckByProduct(textBox1.Text);
-            //}
+            
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            service.ExportHtml("s.html");
         }
     }
 }
