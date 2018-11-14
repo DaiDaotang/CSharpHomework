@@ -1,20 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Serialization;
 using System.IO;
+using System.Linq;
+using System.Xml;
+using System.Xml.Serialization;
+using System.Xml.XPath;
+using System.Xml.Xsl;
+
 
 namespace program
 {
     [Serializable]
     public class OrderService
     {
-        public List<Order> orderList;
+        private List<Order> orderList;
         public OrderService()
         {
             orderList = new List<Order>();
         }
+
+        public List<Order> OrderList { get => orderList; set => orderList = value; }
+
         public void AddOrder(Order newOrder)
         {
             orderList.Add(newOrder);
@@ -23,7 +29,7 @@ namespace program
         {
             return orderList.ToList();
         }
-        public void DeleteById(uint id)
+        public void DeleteById(string id)
         {
             bool find = false;
             for (int i = 0; i < orderList.Count; i++)
@@ -71,12 +77,12 @@ namespace program
                 throw new CanNotFindOrder($"没有客户为{client}的订单");
             }
         }
-        public List<Order> CheckByName(string name)
+        public List<Order> CheckByProduct(string product)
         {
             var query = orderList
-                .Where(order => order.Details.Where(d=>d.Name == name).Count()>0);
+                .Where(order => order.Details.Where(d=>d.Product == product).Count()>0);
             return query.ToList();
-            throw new CanNotFindOrder($"没有名为{name}的订单");
+            throw new CanNotFindOrder($"没有名为{product}的订单");
         }
         public List<Order> CheckByClient(string client)
         {
@@ -85,7 +91,7 @@ namespace program
             return query.ToList();
             throw new CanNotFindOrder($"没有客户为{client}的订单");
         }
-        public List<Order> CheckById(uint Id)
+        public List<Order> CheckById(string Id)
         {
             var query = orderList
                 .Where(order => order.Id == Id);
@@ -107,18 +113,12 @@ namespace program
                 .ToList();
             return list;
         }
-        public FileInfo Export(String fileName = "s.xml")
+        public FileInfo Export(String fileName)
         {
             XmlSerializer xmlser = new XmlSerializer(typeof(OrderService));
             FileStream fs = new FileStream(fileName, FileMode.Create);
-            try
-            {
-                xmlser.Serialize(fs, this);
-            }
-            finally
-            {
-                fs.Close();
-            }
+            xmlser.Serialize(fs, this);
+            fs.Close();
             return new FileInfo(fileName);
         }
 
@@ -131,7 +131,32 @@ namespace program
             fs.Close();
             return service;
         }
+        public FileInfo ExportHtml(String url)
+        {
+            try
+            {
+                this.Export("s.xml");
+                XmlDocument doc = new XmlDocument();
+                doc.Load("s.xml");
+                XPathNavigator nav = doc.CreateNavigator();
+                nav.MoveToRoot();
+                XslCompiledTransform xt = new XslCompiledTransform();
+                xt.Load("s.xslt");
+                XmlTextWriter writer = new XmlTextWriter(new FileStream(url, FileMode.Create), System.Text.Encoding.UTF8);
+                xt.Transform(nav, null, writer);
+            }
+            catch (XmlException e)
+            {
+                Console.WriteLine("Exception caught:" + e.ToString());
+            }
+            catch (XsltException e)
+            {
+                Console.WriteLine("Exception caught:" + e.ToString());
+            }
+            return new FileInfo(url);
+        }
     }
+    
 }
 
 class CanNotFindOrder : ApplicationException

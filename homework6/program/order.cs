@@ -10,13 +10,29 @@ namespace program
     public class Order
     {
         private List<OrderDetail> details = new List<OrderDetail>();
-        public uint Id { get; set; }
+        public string Id { get; set; }
+        public string PhoneNum { get; set; }
         public string Client { get; set; }
-        public Order() { }
-        public Order(uint id, string client)
+        private static int uid = 0;
+        public Order()
+        {
+            DateTime dateTime = DateTime.Now;
+            SetId();
+            
+            if (uid < 999)
+            {
+                uid++;
+            }
+        }
+        public Order(string id, string client)
         {
             this.Client = client;
             this.Id = id;
+            SetId();
+            if (uid < 999)
+            {
+                uid++;
+            }
         }
         public double Amount
         {
@@ -29,6 +45,23 @@ namespace program
         {
             get => this.details;
         }
+        private void SetId()
+        {
+            DateTime dateTime = DateTime.Now;
+            Id = dateTime.ToString("yyyyMMdd");
+            if (uid < 10)
+            {
+                Id = Id + "00" + uid.ToString();
+            }
+            else if (uid < 100)
+            {
+                Id = Id + "0" + uid.ToString();
+            }
+            else
+            {
+                Id = Id + uid.ToString();
+            }
+        }
         public void AddDetails(OrderDetail orderDetail)
         {
             if (this.Details.Contains(orderDetail))
@@ -37,7 +70,7 @@ namespace program
             }
             details.Add(orderDetail);
         }
-        public void RemoveDetails(uint orderDetailId)
+        public void RemoveDetails(string orderDetailId)
         {
             details.RemoveAll(d => d.Id == orderDetailId);
         }

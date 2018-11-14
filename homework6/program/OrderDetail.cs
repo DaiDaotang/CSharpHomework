@@ -10,16 +10,16 @@ namespace program
     {
         public double price;
         public OrderDetail() { }
-        public OrderDetail(uint id, string name, uint quantity, double price)
+        public OrderDetail(string id, string product, uint quantity, double price)
         {
             this.Quantity = quantity;
             this.Id = id;
-            this.Name = name;
+            this.Product = product;
             this.Price = price;
         }
-        public uint Id { get; set; }
+        public string Id { get; set; }
         public uint Quantity { get; set; }
-        public string Name { get; set; }
+        public string Product { get; set; }
         public double Price
         {
             get { return price; }
