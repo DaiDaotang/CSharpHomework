@@ -125,7 +125,7 @@ namespace program
         public static OrderService Import(String fileName)
         {
             FileStream fs;
-            fs = new FileStream(fileName, FileMode.Open);
+            fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             XmlSerializer xmlser = new XmlSerializer(typeof(OrderService));
             OrderService service = (OrderService)xmlser.Deserialize(fs);
             fs.Close();
@@ -135,13 +135,13 @@ namespace program
         {
             try
             {
-                this.Export("s.xml");
+                this.Export(@"D:\s.xml");
                 XmlDocument doc = new XmlDocument();
-                doc.Load("s.xml");
+                doc.Load(@"D:\s.xml");
                 XPathNavigator nav = doc.CreateNavigator();
                 nav.MoveToRoot();
                 XslCompiledTransform xt = new XslCompiledTransform();
-                xt.Load("s.xslt");
+                xt.Load(@"D:\s.xslt");
                 XmlTextWriter writer = new XmlTextWriter(new FileStream(url, FileMode.Create), System.Text.Encoding.UTF8);
                 xt.Transform(nav, null, writer);
             }
