@@ -16,20 +16,12 @@ namespace program1
     {
         //OrderService service = new OrderService();
 
-        OrderService service = OrderService.Import ("s.xml");
+        OrderService service = OrderService.Import (@"D:\s.xml");
 
 
         public Form1()
         {
             InitializeComponent();
-            //OrderDetail orderDetails1 = new OrderDetail("1", "apple", 3, 2);
-            //Order order1 = new Order("1", "customer1");
-            //order1.AddDetails(orderDetails1);
-            //OrderDetail orderDetails2 = new OrderDetail("2", "orange", 2, 1);
-            //Order order2 = new Order("2", "customer2");
-            //order2.AddDetails(orderDetails2);
-            //service.AddOrder(order1);
-            //service.AddOrder(order2);
 
             orderbinding.DataSource = service.OrderList;
 
@@ -76,7 +68,7 @@ namespace program1
                 }
       
             }
-            service.Export("s.xml"); 
+            service.Export(@"D:\s.xml"); 
             return true;
         }
         private void change_Click(object sender, EventArgs e)
@@ -96,13 +88,13 @@ namespace program1
             {
                 service.DeleteByClient(textBox1.Text);
             }
-            service.Export("s.xml");
+            service.Export(@"D:\s.xml");
             
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            service.ExportHtml("s.html");
+            service.ExportHtml(@"D:\s.html");
         }
     }
 }
